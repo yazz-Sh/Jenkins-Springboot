@@ -1,19 +1,19 @@
-
 pipeline {
     agent any
-    tools {
-        maven "maven"
-        jdk "JAVA_17"
-    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout GIT') {
             steps {
-                git branch: 'main', url: 'https://github.com/yazz-Sh/Jenkins-Springboot.git'
+                echo 'Pulling...'
+                git branch: 'main',
+                    url: 'https://github.com/yazz-Sh/Jenkins-Springboot.git'
             }
         }
-        stage('Build') {
+
+        stage('Testing maven') {
             steps {
-                sh "mvn clean package -Dmaven.test.skip=true"            }
+                sh 'mvn -version'
+            }
         }
     }
 }
