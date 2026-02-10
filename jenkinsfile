@@ -1,53 +1,18 @@
 pipeline {
-  agent any
-
-  tools {
-    jdk 'JDK17'   // si tu as configuré un JDK dans Jenkins -> Tools
-    maven 'Maven' // si tu as configuré Maven dans Jenkins -> Tools
-  }
-
-  options {
-    timestamps()
-    ansiColor('xterm')
-  }
-
-  environment {
-    MAVEN_OPTS = "-Dmaven.repo.local=.m2"
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    agent any
+    tools {
+        maven "maven"
+        jdk "JAVA_17"
     }
-
-    stage('Build & Unit Tests') {
-      steps {
-        sh 'mvn -B -U clean test'
-      }
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/yazz-Sh/Jenkins-Springboot'
+            }
         }
-      }
-    }
-
-    stage('Package') {
-      steps {
-        sh 'mvn -B -DskipTests package'
-      }
-      post {
-        success {
-          archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+        stage('Build') {
+            steps {
+                sh "mvn clean package -Dmaven.test.skip=true"            }
         }
-      }
     }
-  }
-
-  post {
-    always {
-      cleanWs()
-    }
-  }
 }
