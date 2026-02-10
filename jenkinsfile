@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
     tools {
@@ -7,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/yazz-Sh/Jenkins-Springboot'
+                git branch: 'main', url: 'https://github.com/yazz-Sh/Jenkins-Springboot.git'
             }
         }
         stage('Build') {
