@@ -31,9 +31,7 @@ pipeline {
                     mvn sonar:sonar \
                     -Dsonar.host.url=http://192.168.56.10:9000 \
                     -Dsonar.login=488c7c3d18bee9a081f673761cedf7ee15009f51
-                    -Dsonar.sources=src/main/java \
-                    -Dsonar.java.binaries=target/classes \
-                    -Dsonar.inclusions=**/*.java
+                   
                 """
             }
         }
