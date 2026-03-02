@@ -7,7 +7,7 @@ pipeline {
             steps {
                 echo "Getting Project from Git"
                 git branch: 'main',
-                    url: 'https://github.com/ahlemhidri01/devops.git'
+                    url: 'https://github.com/yazz-Sh/Jenkins-Springboot.git'
             }
         }
 
