@@ -14,13 +14,13 @@ pipeline {
         stage('MVN CLEAN') {
             steps {
                 sh 'chmod +x mvnw'
-                sh './mvnw clean'
+                sh './mvn clean'
             }
         }
 
         stage('MVN COMPILE') {
             steps {
-                sh './mvnw compile'
+                sh './mvn compile'
             }
         }
 
