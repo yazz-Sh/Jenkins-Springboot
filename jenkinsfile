@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'    // ✅ nom exact configuré dans Jenkins
+    }
+
     stages {
 
         stage('GIT') {
