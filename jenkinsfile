@@ -13,26 +13,35 @@ pipeline {
 
         stage('MVN CLEAN') {
             steps {
-                sh 'chmod +x mvnw'
-                sh './mvn clean'
+                sh 'mvn clean'        
             }
         }
 
         stage('MVN COMPILE') {
             steps {
-                sh './mvn compile'
+                sh 'mvn compile'      
             }
         }
 
         stage('MVN SONARQUBE') {
             steps {
                 sh """
-                    ./mvnw sonar:sonar \
+                    mvn sonar:sonar \
                     -Dsonar.host.url=http://192.168.56.10:9000 \
                     -Dsonar.login=da8a26274e356954393be70aa516629f5f530767
                 """
             }
         }
 
+    }
+
+    post {
+        success {
+            echo " Pipeline réussi !"
+            echo "Résultats : http://192.168.56.10:9000"
+        }
+        failure {
+            echo " Pipeline échoué."
+        }
     }
 }
