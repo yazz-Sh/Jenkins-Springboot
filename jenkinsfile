@@ -17,21 +17,13 @@ pipeline {
             }
         }
 
-        stage('MVN BUILD') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-
         stage('MVN SONARQUBE') {
             steps {
-                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                        mvn sonar:sonar \
-                        -Dsonar.host.url=$SONAR_HOST \
-                        -Dsonar.login=$SONAR_TOKEN
-                    '''
-                }
+                sh """
+                    mvn sonar:sonar \
+                    -Dsonar.host.url=$SONAR_HOST \
+                    -Dsonar.login=488c7c3d18bee9a081f673761cedf7ee15009f51
+                """
             }
         }
 
@@ -55,7 +47,7 @@ pipeline {
         stage('K8S DEPLOY') {
             steps {
                 sh '''
-                    kubectl apply -f k8s/
+                    kubectl apply -f /home/vagrant/k8s-springboot/
                     kubectl rollout restart deployment/spring-app-deployment -n $KUBE_NAMESPACE
                     kubectl get pods -n $KUBE_NAMESPACE
                     kubectl get svc -n $KUBE_NAMESPACE
@@ -67,7 +59,7 @@ pipeline {
     post {
         success {
             echo "Pipeline réussi !"
-            echo "Résultats SonarQube : http://192.168.56.10:9000"
+            echo "Résultats : http://192.168.56.10:9000"
         }
         failure {
             echo "Pipeline échoué."
