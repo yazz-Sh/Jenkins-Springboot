@@ -17,6 +17,14 @@ pipeline {
             }
         }
 
+
+        stage('MVN BUILD') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        
         stage('MVN SONARQUBE') {
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
