@@ -17,14 +17,22 @@ pipeline {
             }
         }
 
+<<<<<<< HEAD
 
         stage('MVN BUILD') {
+=======
+	stage('MVN BUILD') {
+>>>>>>> 1400a6d (Add Maven build stage before SonarQube)
             steps {
                 sh 'mvn clean compile'
             }
         }
 
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 1400a6d (Add Maven build stage before SonarQube)
         stage('MVN SONARQUBE') {
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
