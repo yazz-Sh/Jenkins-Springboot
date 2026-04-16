@@ -19,11 +19,13 @@ pipeline {
 
         stage('MVN SONARQUBE') {
             steps {
-                sh """
-                    mvn sonar:sonar \
-                    -Dsonar.host.url=$SONAR_HOST \
-                    -Dsonar.login=488c7c3d18bee9a081f673761cedf7ee15009f51
-                """
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.host.url=$SONAR_HOST \
+                        -Dsonar.login=$SONAR_TOKEN
+                    """
+                }
             }
         }
 
@@ -39,6 +41,7 @@ pipeline {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push $DOCKER_IMAGE
+                        docker logout
                     '''
                 }
             }
@@ -51,6 +54,8 @@ pipeline {
                     kubectl rollout restart deployment/spring-app-deployment -n $KUBE_NAMESPACE
                     kubectl get pods -n $KUBE_NAMESPACE
                     kubectl get svc -n $KUBE_NAMESPACE
+                    kubectl get deployment spring-app-deployment -n $KUBE_NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}'
+                    echo
                 '''
             }
         }
