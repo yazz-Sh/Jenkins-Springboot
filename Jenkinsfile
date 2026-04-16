@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+
+    stages {
+
+        stage('GIT') {
+            steps {
+                echo "Getting Project from Git"
+                git branch: 'main',
+                    url: 'https://github.com/yazz-Sh/Jenkins-Springboot.git'
+            }
+        }
+
+        stage('MVN CLEAN') {
+            steps {
+                sh 'mvn clean'        
+            }
+        }
+
+        stage('MVN COMPILE') {
+            steps {
+                sh 'mvn compile'      
+            }
+        }
+        
+
+        stage('MVN SONARQUBE') {
+            steps {
+                sh """
+                    mvn sonar:sonar \
+                    -Dsonar.host.url=http://192.168.56.10:9000 \
+                    -Dsonar.login=488c7c3d18bee9a081f673761cedf7ee15009f51
+                   
+                """
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo " Pipeline réussi !"
+            echo "Résultats : http://192.168.56.10:9000"
+        }
+        failure {
+            echo " Pipeline échoué."
+        }
+    }
+}
