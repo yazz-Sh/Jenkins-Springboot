@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "shiliyasmine/Jenkins-Springboot:latest"
+        KUBE_NAMESPACE = "devops"
+        SONAR_HOST = "http://192.168.56.10:9000"
+    }
 
     stages {
 
@@ -12,39 +17,57 @@ pipeline {
             }
         }
 
-        stage('MVN CLEAN') {
-            steps {
-                sh 'mvn clean'        
-            }
-        }
-
-        stage('MVN COMPILE') {
-            steps {
-                sh 'mvn compile'      
-            }
-        }
-        
-
         stage('MVN SONARQUBE') {
             steps {
-                sh """
-                    mvn sonar:sonar \
-                    -Dsonar.host.url=http://192.168.56.10:9000 \
-                    -Dsonar.login=488c7c3d18bee9a081f673761cedf7ee15009f51
-                   
-                """
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.host.url=$SONAR_HOST \
+                        -Dsonar.login=$SONAR_TOKEN
+                    """
+                }
             }
         }
 
+        stage('DOCKER BUILD') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        stage('DOCKER PUSH') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push $DOCKER_IMAGE
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('K8S DEPLOY') {
+            steps {
+                sh '''
+                    kubectl apply -f /home/vagrant/k8s-springboot/
+                    kubectl rollout restart deployment/spring-app-deployment -n $KUBE_NAMESPACE
+                    kubectl get pods -n $KUBE_NAMESPACE
+                    kubectl get svc -n $KUBE_NAMESPACE
+                    kubectl get deployment spring-app-deployment -n $KUBE_NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].image}'
+                    echo
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo " Pipeline réussi !"
+            echo "Pipeline réussi !"
             echo "Résultats : http://192.168.56.10:9000"
         }
         failure {
-            echo " Pipeline échoué."
+            echo "Pipeline échoué."
         }
     }
 }
