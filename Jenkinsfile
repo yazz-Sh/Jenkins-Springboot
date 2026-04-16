@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "shiliyasmine/Jenkins-Springboot:latest"
+        DOCKER_IMAGE = "shiliyasmine/jenkins-springboot:latest"
         KUBE_NAMESPACE = "devops"
         SONAR_HOST = "http://192.168.56.10:9000"
     }
