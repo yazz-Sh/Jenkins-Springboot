@@ -58,7 +58,7 @@ pipeline {
         stage('K8S DEPLOY') {
             steps {
                 sh '''
-                    kubectl apply -f /home/vagrant/k8s-springboot/
+                    kubectl apply -f k8s/
                     kubectl rollout restart deployment/spring-app-deployment -n $KUBE_NAMESPACE
                     kubectl get pods -n $KUBE_NAMESPACE
                     kubectl get svc -n $KUBE_NAMESPACE
